@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    compile project(":livingdoc-fixture-api")
+    compile project(":livingdoc-fixture-converter")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile 'org.assertj:assertj-core:3.6.2'
@@ -43,3 +45,9 @@ artifacts {
     archives(sourcesJar)
 }
 
+// Kotlin compiler settings
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
