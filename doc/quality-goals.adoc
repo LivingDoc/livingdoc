@@ -9,23 +9,21 @@
 |User experience (Business Expert)
 a|* Business Expert
 |Users who are not software developers should be able to create and edit
-Executable Documents with minimal or no training.
+Executable Documents with minimal or no training. Reports are easy to
+understand.
 
 |2
-|Usability (Control of Execution)
-a|* Business Expert
-  * Developer
-  * Tester
-|It is possible to select a subset of Executable Documents and trigger their
-execution quickly.
-
-|3
-|User experience (Developer, Tester)
+|User experience (Developer)
 a|* Developer
-  * Tester
 |Implementing Fixtures is straight-forward for developers and they can grasp
 the basics with minimal or no training. Fixtures are readable and minimal in
 size and complexity.
+
+|3
+|Usability (Control of Execution)
+a|* Developer
+|It is possible to select a subset of Executable Documents and trigger their
+execution quickly.
 
 |4
 |Cloud-Readiness
@@ -73,7 +71,7 @@ implemented with minimal effort.
 
 |10
 |Extensibility - Reporting
-a|* Tester
+a|* Developer
 |Support for different test report formats can be implemented with minimal
 effort.
 
@@ -81,13 +79,11 @@ effort.
 |Performance of Execution
 a|* Business Expert
   * Developer
-  * Tester
 |The system makes optimal use of its resources to enable fast feedback.
 
 |12
 |Extensibility - Programming Language
 a|* Developer
-  * Tester
 |Support for Fixtures written in different programming languages can be
 realized with reasonable effort.
 |===
@@ -97,6 +93,5 @@ realized with reasonable effort.
 
 * Business Expert
 * Developer
-* Tester
 * Administrator
 
