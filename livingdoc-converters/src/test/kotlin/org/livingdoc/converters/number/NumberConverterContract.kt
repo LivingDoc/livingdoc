@@ -46,7 +46,7 @@ internal abstract class NumberConverterContract<T : Number> {
     }
 
     private fun assertThatValueCanBeConverted(value: T) {
-        val result = cut.convert("$value")
+        val result = cut.convert("$value", null, null)
         assertThat(result).isEqualTo(value)
     }
 
@@ -63,13 +63,13 @@ internal abstract class NumberConverterContract<T : Number> {
     }
 
     private fun assertThatValueCanBeConverted(value: String, expected: T) {
-        val result = cut.convert(value)
+        val result = cut.convert(value, null, null)
         assertThat(result).isEqualTo(expected)
     }
 
     @Test fun `non number cannot be converted`() {
         assertThrows(ConversionException::class.java) {
-            cut.convert("not a number")
+            cut.convert("not a number", null, null)
         }
     }
 
@@ -80,7 +80,7 @@ internal abstract class NumberConverterContract<T : Number> {
 
         @Test fun `default locale used if no element given`() {
             val (stringValue, value) = englishValue
-            val result = cut.convert(stringValue, null)
+            val result = cut.convert(stringValue, null, null)
             assertThat(result).isEqualTo(value)
         }
 
@@ -88,7 +88,7 @@ internal abstract class NumberConverterContract<T : Number> {
             given(element.getAnnotation(Language::class.java)).willReturn(null)
 
             val (stringValue, value) = englishValue
-            val result = cut.convert(stringValue, element)
+            val result = cut.convert(stringValue, element, null)
             assertThat(result).isEqualTo(value)
         }
 
@@ -97,7 +97,7 @@ internal abstract class NumberConverterContract<T : Number> {
             given(language.value).willReturn("de")
 
             val (stringValue, value) = germanValue
-            val result = cut.convert(stringValue, element)
+            val result = cut.convert(stringValue, element, null)
             assertThat(result).isEqualTo(value)
         }
 
