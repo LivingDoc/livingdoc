@@ -7,10 +7,13 @@ import org.livingdoc.engine.execution.DocumentResult
 import org.livingdoc.engine.execution.ExecutionException
 import org.livingdoc.engine.execution.examples.ExampleResult
 import org.livingdoc.engine.execution.examples.decisiontables.DecisionTableExecutor
+import org.livingdoc.engine.execution.examples.decisiontables.model.DecisionTableResult
 import org.livingdoc.engine.execution.examples.scenarios.ScenarioExecutor
+import org.livingdoc.engine.execution.examples.scenarios.model.ScenarioResult
 import org.livingdoc.repositories.Document
 import org.livingdoc.repositories.RepositoryManager
 import org.livingdoc.repositories.config.Configuration
+import org.livingdoc.repositories.model.Example
 import org.livingdoc.repositories.model.decisiontable.DecisionTable
 import org.livingdoc.repositories.model.scenario.Scenario
 import kotlin.reflect.KClass
@@ -32,26 +35,20 @@ class LivingDoc(
 ) {
 
     @Throws(ExecutionException::class)
-    fun execute(documentClass: Class<*>): DocumentResult {
+    fun execute(documentClass: Class<*>) = DocumentResult(getExecutableExamples(documentClass).map { it.execute() })
+
+    @Throws(ExecutionException::class)
+    fun getExecutableExamples(documentClass: Class<*>): List<ExecutableExample<*, *>> {
         val documentClassModel = ExecutableDocumentModel.of(documentClass)
-
         val document = loadDocument(documentClassModel)
-
-        val results: List<ExampleResult> = document.elements.mapNotNull { element ->
+        return document.elements.mapNotNull { element ->
             when (element) {
-                is DecisionTable -> {
-                    decisionTableToFixtureMatcher.findMatchingFixture(element, documentClassModel.decisionTableFixtures)
-                            ?.let { decisionTableExecutor.execute(element, it) }
-                }
-                is Scenario -> {
-                    scenarioToFixtureMatcher.findMatchingFixture(element, documentClassModel.decisionTableFixtures)
-                            ?.let { scenarioExecutor.execute(element, it) }
-                }
+                is DecisionTable -> executableDecisionTable(element, documentClassModel)
+                is Scenario -> executableScenario(element, documentClassModel)
                 else -> null
             }
         }
 
-        return DocumentResult(results)
     }
 
     private fun loadDocument(documentClassModel: ExecutableDocumentModel): Document {
@@ -60,7 +57,44 @@ class LivingDoc(
         }
     }
 
+    private fun executableDecisionTable(element: DecisionTable, documentModel: ExecutableDocumentModel): ExecutableDecisionTable? {
+        val matchingFixture = decisionTableToFixtureMatcher.findMatchingFixture(element, documentModel.decisionTableFixtures)
+        if (matchingFixture != null) {
+            return ExecutableDecisionTable(element) {
+                decisionTableExecutor.execute(it, matchingFixture, documentModel.documentClass)
+            }
+        }
+        return null
+    }
+
+    private fun executableScenario(scenario: Scenario, documentModel: ExecutableDocumentModel): ExecutableScenario? {
+        val matchingFixture = scenarioToFixtureMatcher.findMatchingFixture(scenario, documentModel.decisionTableFixtures)
+        if (matchingFixture != null) {
+            return ExecutableScenario(scenario) {
+                scenarioExecutor.execute(it, matchingFixture, documentModel.documentClass)
+            }
+        }
+        return null
+    }
+
 }
+
+sealed class ExecutableExample<A : Example, B : ExampleResult>(
+        val example: A,
+        private val execution: (A) -> B
+) {
+    fun execute(): B = execution(example)
+}
+
+class ExecutableDecisionTable(
+        example: DecisionTable,
+        execution: (DecisionTable) -> DecisionTableResult
+) : ExecutableExample<DecisionTable, DecisionTableResult>(example, execution)
+
+class ExecutableScenario(
+        example: Scenario,
+        execution: (Scenario) -> ScenarioResult
+) : ExecutableExample<Scenario, ScenarioResult>(example, execution)
 
 private data class DocumentIdentifier(
         val repository: String,
@@ -68,6 +102,7 @@ private data class DocumentIdentifier(
 )
 
 private data class ExecutableDocumentModel(
+        val documentClass: Class<*>,
         val documentIdentifier: DocumentIdentifier,
         val decisionTableFixtures: List<Class<*>>,
         val scenarioFixtures: List<Class<*>>
@@ -78,6 +113,7 @@ private data class ExecutableDocumentModel(
         fun of(documentClass: Class<*>): ExecutableDocumentModel {
             validate(documentClass)
             return ExecutableDocumentModel(
+                    documentClass = documentClass,
                     documentIdentifier = getDocumentIdentifier(documentClass),
                     decisionTableFixtures = getDecisionTableFixtures(documentClass),
                     scenarioFixtures = getScenarioFixtures(documentClass)
