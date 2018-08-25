@@ -3,17 +3,20 @@ package org.livingdoc.engine
 import org.livingdoc.engine.execution.examples.decisiontables.DecisionTableFixtureModel
 import org.livingdoc.repositories.model.decisiontable.DecisionTable
 import org.livingdoc.repositories.model.decisiontable.Header
-import kotlin.reflect.KClass
 
 /**
  * Default matcher to find the right fixture classes for a given list of tables.
  */
 class DecisionTableToFixtureMatcher {
 
+    fun findMatchingFixture(decisionTable: DecisionTable, fixtures: List<Class<*>>): Class<*>? {
+        return matchTablesToFixtures(listOf(decisionTable), fixtures)[decisionTable]
+    }
+
     /**
      * Finds the fitting fixture for the given decision tables.
      */
-    fun matchTablesToFixtures(tables: List<DecisionTable>, fixtures: List<KClass<*>>): Map<DecisionTable, Class<*>> {
+    fun matchTablesToFixtures(tables: List<DecisionTable>, fixtures: List<Class<*>>): Map<DecisionTable, Class<*>> {
         /*
          * - Start with a list of Tables and a list of Fixtures
          * - Create mapping Model -> Fixture (straightforward)
@@ -37,8 +40,8 @@ class DecisionTableToFixtureMatcher {
                 table to fixture
             }.toMap()
 
-    private fun mapModelsToFixtures(fixtureClasses: List<KClass<*>>) =
-            fixtureClasses.map { it.java }.associateByTo(mutableMapOf()) { clazz ->
+    private fun mapModelsToFixtures(fixtureClasses: List<Class<*>>) =
+            fixtureClasses.associateByTo(mutableMapOf()) { clazz ->
                 DecisionTableFixtureModel(clazz)
             }
 
