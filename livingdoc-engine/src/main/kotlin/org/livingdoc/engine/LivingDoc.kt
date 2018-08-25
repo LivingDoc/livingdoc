@@ -5,11 +5,14 @@ import org.livingdoc.api.fixtures.decisiontables.DecisionTableFixture
 import org.livingdoc.api.fixtures.scenarios.ScenarioFixture
 import org.livingdoc.engine.execution.DocumentResult
 import org.livingdoc.engine.execution.ExecutionException
+import org.livingdoc.engine.execution.examples.ExampleResult
 import org.livingdoc.engine.execution.examples.decisiontables.DecisionTableExecutor
 import org.livingdoc.engine.execution.examples.scenarios.ScenarioExecutor
 import org.livingdoc.repositories.Document
 import org.livingdoc.repositories.RepositoryManager
 import org.livingdoc.repositories.config.Configuration
+import org.livingdoc.repositories.model.decisiontable.DecisionTable
+import org.livingdoc.repositories.model.scenario.Scenario
 import kotlin.reflect.KClass
 
 /**
@@ -34,27 +37,21 @@ class LivingDoc(
 
         val document = loadDocument(documentClassModel)
 
-        val decisionTableFixtures = documentClassModel.decisionTableFixtures
-        val decisionTableResults = document.tables.mapNotNull {
-            val fixture = decisionTableToFixtureMatcher.findMatchingFixture(it, decisionTableFixtures)
-            if (fixture != null) {
-                decisionTableExecutor.execute(it, fixture)
-            } else {
-                null
+        val results: List<ExampleResult> = document.elements.mapNotNull { element ->
+            when (element) {
+                is DecisionTable -> {
+                    decisionTableToFixtureMatcher.findMatchingFixture(element, documentClassModel.decisionTableFixtures)
+                            ?.let { decisionTableExecutor.execute(element, it) }
+                }
+                is Scenario -> {
+                    scenarioToFixtureMatcher.findMatchingFixture(element, documentClassModel.decisionTableFixtures)
+                            ?.let { scenarioExecutor.execute(element, it) }
+                }
+                else -> null
             }
         }
 
-        val scenarioFixtures = documentClassModel.scenarioFixtures
-        val scenarioResults = document.lists.mapNotNull {
-            val fixture = scenarioToFixtureMatcher.findMatchingFixture(it, scenarioFixtures)
-            if (fixture != null) {
-                scenarioExecutor.execute(it, fixture)
-            } else {
-                null
-            }
-        }
-
-        return DocumentResult(decisionTableResults, scenarioResults)
+        return DocumentResult(results)
     }
 
     private fun loadDocument(documentClassModel: ExecutableDocumentModel): Document {
