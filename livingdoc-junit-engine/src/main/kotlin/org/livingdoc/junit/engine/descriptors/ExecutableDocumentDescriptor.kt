@@ -9,7 +9,9 @@ import org.livingdoc.api.fixtures.decisiontables.DecisionTableFixture
 import org.livingdoc.api.fixtures.scenarios.ScenarioFixture
 import org.livingdoc.engine.execution.DocumentResult
 import org.livingdoc.engine.execution.examples.decisiontables.DecisionTableExecutor
+import org.livingdoc.engine.execution.examples.decisiontables.model.DecisionTableResult
 import org.livingdoc.engine.execution.examples.scenarios.ScenarioExecutor
+import org.livingdoc.engine.execution.examples.scenarios.model.ScenarioResult
 import org.livingdoc.junit.engine.LivingDocContext
 import org.livingdoc.repositories.model.decisiontable.DecisionTable
 import org.livingdoc.repositories.model.decisiontable.Field
@@ -29,16 +31,19 @@ class ExecutableDocumentDescriptor(
         val result = context.livingDoc.execute(documentClass)
         // val result = dummyExecution()
 
-        result.decisionTableResults.forEachIndexed { index, tableResult ->
-            val descriptor = DecisionTableTestDescriptor(tableUniqueId(index), tableDisplayName(index), tableResult)
-                    .also { it.setParent(this) }
-            dynamicTestExecutor.execute(descriptor)
-        }
-
-        result.scenarioResults.forEachIndexed { index, scenarioResult ->
-            val descriptor = ScenarioTestDescriptor(scenarioUniqueId(index), scenarioDisplayName(index), scenarioResult)
-                    .also { it.setParent(this) }
-            dynamicTestExecutor.execute(descriptor)
+        result.results.forEachIndexed { index, exampleResult ->
+            when (exampleResult) {
+                is DecisionTableResult -> {
+                    val descriptor = DecisionTableTestDescriptor(tableUniqueId(index), tableDisplayName(index), exampleResult)
+                            .also { it.setParent(this) }
+                    dynamicTestExecutor.execute(descriptor)
+                }
+                is ScenarioResult -> {
+                    val descriptor = ScenarioTestDescriptor(scenarioUniqueId(index), scenarioDisplayName(index), exampleResult)
+                            .also { it.setParent(this) }
+                    dynamicTestExecutor.execute(descriptor)
+                }
+            }
         }
 
         return context
@@ -96,7 +101,7 @@ class ExecutableDocumentDescriptor(
         val scenarioResult = ScenarioExecutor()
                 .execute(scenario, scenarioFixture, documentClass)
 
-        return DocumentResult(listOf(decisionTableResult), listOf(scenarioResult))
+        return DocumentResult(listOf(decisionTableResult) + listOf(scenarioResult))
 
     }
 
