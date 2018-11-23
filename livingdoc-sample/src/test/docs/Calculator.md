@@ -13,3 +13,8 @@ Examples
 | -1 |  1 |  0        | -2        | -1        | -1        |
 |  1 | -1 |  0        |  2        | -1        | -1        |
 | -1 | -1 | -2        |  0        |  1        |  1        |
+
+# Scenario
+
+- adding 1 and 2 equals 3
+- multiplying 3 and 2 equals 6
