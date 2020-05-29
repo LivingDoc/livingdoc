@@ -1,8 +1,9 @@
 package org.livingdoc.converters;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 class BooleanConverterJavaTest {
@@ -11,12 +12,12 @@ class BooleanConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaBoolean() {
-        assertThat(cut.canConvertTo(Boolean.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(Boolean.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
-        Boolean value = cut.convert("true", null, null);
+        Boolean value = TypeConverterExtensionKt.convertValueOnly(cut, "true");
         assertThat(value).isTrue();
     }
 

@@ -1,8 +1,10 @@
 package org.livingdoc.converters.collection
 
-open class SetConverter : AbstractCollectionConverter<Set<Any>>() {
+import kotlin.reflect.KClass
 
-    override fun convertToTarget(collection: List<Any>) = collection.toSet()
+open class SetConverter : AbstractCollectionConverter<Set<*>>() {
 
-    override fun canConvertTo(targetType: Class<*>?) = Set::class.java == targetType
+    override fun convertToTarget(collection: List<*>) = collection.toSet()
+
+    override fun canConvertTo(targetType: KClass<*>) = Set::class == targetType
 }

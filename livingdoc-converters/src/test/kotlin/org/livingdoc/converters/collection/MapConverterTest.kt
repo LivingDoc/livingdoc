@@ -4,11 +4,12 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.livingdoc.api.conversion.ConversionException
 import org.livingdoc.api.conversion.Converter
+import org.livingdoc.converters.convertValueForProperty
 
 internal class MapConverterTest : CollectionConverterContract() {
 
     override val cut = MapConverter()
-    override val collectionClass = Map::class.java
+    override val collectionClass = Map::class
     override val fixtureClass = MapFake::class
     override val booleanInput: String = "true, true; false, false"
     override val intInput: String = "1, 1; 2, 2; 3, 3"
@@ -18,10 +19,10 @@ internal class MapConverterTest : CollectionConverterContract() {
     @Test
     fun `throws error on not matching key value count`() {
         val input = "1, 1; 2, 2; 3 "
-        val annotatedElement = fakeIntegerField()
+        val property = fakeIntegerField()
 
         Assertions.assertThrows(ConversionException::class.java) {
-            cut.convert(input, annotatedElement, null)
+            cut.convertValueForProperty(input, property)
         }
     }
 

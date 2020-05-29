@@ -1,15 +1,18 @@
 package org.livingdoc.converters;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import kotlin.jvm.JvmClassMappingKt;
+import kotlin.reflect.KClass;
+import kotlin.reflect.KType;
+import org.jetbrains.annotations.NotNull;
+import org.livingdoc.api.conversion.Context;
 import org.livingdoc.api.conversion.ConversionException;
 import org.livingdoc.api.conversion.Converter;
 import org.livingdoc.api.conversion.TypeConverter;
 import org.livingdoc.api.documents.ExecutableDocument;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TypeConvertersTestFixtures {
 
@@ -67,15 +70,13 @@ public class TypeConvertersTestFixtures {
     public static class CustomBooleanConverter implements TypeConverter<Boolean> {
 
         @Override
-        public Boolean convert(String value, AnnotatedElement element, Class<?> documentClass) throws ConversionException {
+        public Boolean convert(@NotNull String value, @NotNull KType type, @NotNull Context context) throws ConversionException {
             return "true".equalsIgnoreCase(value);
         }
 
         @Override
-        public boolean canConvertTo(Class<?> targetType) {
-            return Boolean.class.isAssignableFrom(targetType);
+        public boolean canConvertTo(@NotNull KClass<?> targetType) {
+            return Boolean.class.isAssignableFrom(JvmClassMappingKt.getJavaClass(targetType));
         }
-
     }
-
 }

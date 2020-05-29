@@ -1,10 +1,11 @@
 package org.livingdoc.converters.number;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
-
+import org.livingdoc.converters.TypeConverterExtensionKt;
 import utils.EnglishDefaultLocale;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @EnglishDefaultLocale
@@ -14,12 +15,12 @@ class DoubleConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaDouble() {
-        assertThat(cut.canConvertTo(Double.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(Double.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
-        Double value = cut.convert("42.01", null, null);
+        Double value = TypeConverterExtensionKt.convertValueOnly(cut, "42.01");
         assertThat(value).isEqualTo(42.01d);
     }
 

@@ -1,10 +1,12 @@
 package org.livingdoc.converters.collection
 
-open class ListConverter : AbstractCollectionConverter<List<Any>>() {
+import kotlin.reflect.KClass
 
-    override fun convertToTarget(collection: List<Any>): List<Any> {
+open class ListConverter : AbstractCollectionConverter<List<*>>() {
+
+    override fun convertToTarget(collection: List<*>): List<*> {
         return collection
     }
 
-    override fun canConvertTo(targetType: Class<*>?) = List::class.java == targetType
+    override fun canConvertTo(targetType: KClass<*>) = List::class == targetType
 }

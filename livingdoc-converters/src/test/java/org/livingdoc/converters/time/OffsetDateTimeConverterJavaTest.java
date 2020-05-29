@@ -1,10 +1,12 @@
 package org.livingdoc.converters.time;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import kotlin.jvm.JvmClassMappingKt;
+import org.junit.jupiter.api.Test;
+import org.livingdoc.converters.TypeConverterExtensionKt;
 
 import java.time.OffsetDateTime;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 class OffsetDateTimeConverterJavaTest {
@@ -13,13 +15,13 @@ class OffsetDateTimeConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaOffsetDateTime() {
-        assertThat(cut.canConvertTo(OffsetDateTime.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(OffsetDateTime.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
         OffsetDateTime now = OffsetDateTime.now();
-        OffsetDateTime value = cut.convert(now.toString(), null, null);
+        OffsetDateTime value = TypeConverterExtensionKt.convertValueOnly(cut, now.toString());
         assertThat(value).isEqualTo(now);
     }
 

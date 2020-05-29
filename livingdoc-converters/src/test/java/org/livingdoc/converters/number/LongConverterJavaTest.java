@@ -1,10 +1,11 @@
 package org.livingdoc.converters.number;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
-
+import org.livingdoc.converters.TypeConverterExtensionKt;
 import utils.EnglishDefaultLocale;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @EnglishDefaultLocale
@@ -14,12 +15,12 @@ class LongConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaLong() {
-        assertThat(cut.canConvertTo(Long.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(Long.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
-        Long value = cut.convert("42", null, null);
+        Long value = TypeConverterExtensionKt.convertValueOnly(cut, "42");
         assertThat(value).isEqualTo(42L);
     }
 

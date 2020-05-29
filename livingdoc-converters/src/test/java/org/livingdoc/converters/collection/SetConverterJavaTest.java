@@ -1,6 +1,10 @@
 package org.livingdoc.converters.collection;
 
+import kotlin.jvm.JvmClassMappingKt;
+import kotlin.reflect.KProperty;
+import kotlin.reflect.jvm.ReflectJvmMapping;
 import org.junit.jupiter.api.Test;
+import org.livingdoc.converters.TypeConverterExtensionKt;
 import org.livingdoc.converters.TypeConvertersTestFixtures;
 
 import java.lang.reflect.Field;
@@ -17,15 +21,15 @@ class SetConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaSet() {
-        assertThat(cut.canConvertTo(Set.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(Set.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() throws NoSuchFieldException {
         Set<Boolean> expected = new HashSet<>(Arrays.asList(true, false, false, true));
         Field field = TypeConvertersTestFixtures.NoAnnotations.class.getField("setField");
-
-        Set<?> converted = cut.convert("true, false, false, true", field, null);
+        KProperty<?> property = ReflectJvmMapping.getKotlinProperty(field);
+        Set<?> converted = TypeConverterExtensionKt.convertValueForProperty(cut,"true, false, false, true", property);
         assertThat(expected).isEqualTo(converted);
     }
 }

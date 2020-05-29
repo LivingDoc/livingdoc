@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZonedDateTime;
 
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
+import org.livingdoc.converters.TypeConverterExtensionKt;
 
 
 class ZonedDateTimeConverterJavaTest {
@@ -13,13 +15,13 @@ class ZonedDateTimeConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaZonedDateTime() {
-        assertThat(cut.canConvertTo(ZonedDateTime.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(ZonedDateTime.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
         ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime value = cut.convert(now.toString(), null, null);
+        ZonedDateTime value =  TypeConverterExtensionKt.convertValueOnly(cut, now.toString());
         assertThat(value).isEqualTo(now);
     }
 

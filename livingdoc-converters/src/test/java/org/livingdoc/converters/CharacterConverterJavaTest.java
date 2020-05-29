@@ -2,6 +2,7 @@ package org.livingdoc.converters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
 
 
@@ -11,12 +12,12 @@ class CharacterConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaCharacter() {
-        assertThat(cut.canConvertTo(Character.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(Character.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
-        Character value = cut.convert("a", null, null);
+        Character value = TypeConverterExtensionKt.convertValueOnly(cut, "a");
         assertThat(value).isEqualTo('a');
     }
 

@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 
+import kotlin.jvm.JvmClassMappingKt;
 import org.junit.jupiter.api.Test;
 
+import org.livingdoc.converters.TypeConverterExtensionKt;
 import utils.EnglishDefaultLocale;
 
 
@@ -16,12 +18,12 @@ class BigDecimalConverterJavaTest {
 
     @Test
     void converterCanConvertedToJavaBigDecimal() {
-        assertThat(cut.canConvertTo(BigDecimal.class)).isTrue();
+        assertThat(cut.canConvertTo(JvmClassMappingKt.getKotlinClass(BigDecimal.class))).isTrue();
     }
 
     @Test
     void javaInteroperabilityIsWorking() {
-        BigDecimal value = cut.convert("42.01", null, null);
+        BigDecimal value = TypeConverterExtensionKt.convertValueOnly(cut, "42.01");
         assertThat(value).isEqualTo(BigDecimal.valueOf(42.01d));
     }
 
